@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Card</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="container">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/buyCard.html">Buy cards</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/buyerCards.html">My cards</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/myProfile.html">My profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/playPartyCreate.html">Create room</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/connectForm.html">Connexion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/createForm.html">Create account</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<form action="/create-card" method="POST">
+    <fieldset>
+        <div>
+            <label for="form-affinity">Affinity</label>
+            <div>
+                <input id="form-affinity" type="text" placeholder="Affinity" name="affinity"/>
+            </div>
+            <label for="form-name">Name</label>
+            <div>
+                <input id="form-name" type="text" placeholder="Name" name="name"/>
+            </div>
+            <label for="form-description">Description</label>
+            <div>
+                <input id="form-description" type="text" placeholder="Description" name="description"/>
+            </div>
+            <label for="form-family">Family</label>
+            <div>
+                <input id="form-family" type="text" placeholder="Family" name="family"/>
+            </div>
+            <label for="form-imgUrl">Image URL</label>
+            <div>
+                <input id="form-imgUrl" type="text" placeholder="Image URL" name="imgUrl"/>
+            </div>
+            <label for="form-smallImgUrl">Small Image URL</label>
+            <div>
+                <input id="form-smallImgUrl" type="text" placeholder="Small Image URL" name="smallImgUrl"/>
+            </div>
+            <label for="form-energy">Energy</label>
+            <div>
+                <input id="form-energy" type="number" placeholder="Energy" name="energy"/>
+            </div>
+            <label for="form-hp">HP</label>
+            <div>
+                <input id="form-hp" type="number" placeholder="HP" name="hp"/>
+            </div>
+            <label for="form-defence">Defence</label>
+            <div>
+                <input id="form-defence" type="number" placeholder="Defence" name="defence"/>
+            </div>
+            <label for="form-attack">Attack</label>
+            <div>
+                <input id="form-attack" type="number" placeholder="Attack" name="attack"/>
+            </div>
+            <label for="form-price">Price</label>
+            <div>
+                <input id="form-price" type="number" placeholder="Price" name="price"/>
+            </div>
+            <label for="form-userId">User ID</label>
+            <div>
+                <input id="form-userId" type="text" placeholder="User ID" name="userId"/>
+            </div>
+        </div>
+        <div>
+            <input type="submit" class="uk-button uk-button-default" value="Create"/>
+        </div>
+    </fieldset>
+</form>
+</body>
+</html>

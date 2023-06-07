@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Card</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <style>
+        /* Define your custom CSS styles here */
+        .card {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .card .button {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #ccc;
+            color: #fff;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+        .card .view-button {
+            background-color: #007bff;
+        }
+        .card .buy-button {
+            background-color: #28a745;
+        }
+
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="container">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/buyCard.html">Buy cards</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/buyerCards.html">My cards</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/myProfile.html">My profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/playPartyCreate.html">Create room</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/connectForm.html">Connexion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/createForm.html">Create account</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="cardContainer">
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $.ajax({
+            url: "/buy-card",
+            type: "GET",
+            success: function(data) {
+                displayCards(data);
+            }
+        });
+    });
+
+    function displayCards(cardList) {
+        var cardContainer = $("#cardContainer");
+
+        cardList.response.forEach(function(card) {
+            var cardDiv = $("<div class='card'></div>");
+
+            var cardName = $("<h3></h3>").text(card.name);
+            cardDiv.append(cardName);
+
+            var cardDescription = $("<p></p>").text(card.description);
+            cardDiv.append(cardDescription);
+
+            var viewButton = $("<a class='button view-button'>View</a>")
+                .attr("href", "/view-card/" + card.id);
+            cardDiv.append(viewButton);
+
+            var buyForm = $("<form method='post'></form>")
+                .attr("action", "/buy-card/" + card.id);
+            var buyButton = $("<input type='submit' class='button buy-button' value='Buy' />");
+            buyForm.append(buyButton);
+            cardDiv.append(buyForm);
+
+            cardContainer.append(cardDiv);
+        });
+    }
+
+    </script>
+</body>
+</html>

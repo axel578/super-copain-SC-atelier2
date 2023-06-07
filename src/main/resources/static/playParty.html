@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/custom.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="/script/js/cardList.js"></script>
+    <script src="/script/js/custom.js"></script>
+</head>
+<body>
+<style>
+
+    .card {
+        width: 300px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .card img {
+        width: 100%;
+        max-height: 200px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    select {
+        width: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #337ab7;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #leftSide {
+        float: left;
+        margin-right: 20px;
+    }
+
+    #rightSide {
+        float: left;
+    }
+
+    #full-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="container">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/buyCard.html">Buy cards</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/buyerCards.html">My cards</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/myProfile.html">My profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/playPartyCreate.html">Create room</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/connectForm.html">Connexion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/createForm.html">Create account</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="container">
+    <!-- Left Side -->
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+    function sendFightRequest(playerId) {
+        var selectedCard;
+        if (playerId === 1) {
+            selectedCard = $("#playerCardDropdownA").val();
+        } else if (playerId === 2) {
+            selectedCard = $("#playerCardDropdownB").val();
+        }
+
+        // Perform AJAX request to /party-player-fight
+        $.ajax({
+            type: "POST",
+            url: "/party-player-fight/" + playerId,
+            contentType: "application/json",
+            success: function (response) {
+                // Handle the response and update the page
+                var container = document.getElementById("container");
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+                const id = extractIdFromUrl();
+                var resf = generatePlayerPartyHTML(id)
+            }
+        });
+    }
+
+    function generatePlayerPartyHTML(id) {
+        // Make GET request
+        return fetch(`/view-player-party-data/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                // Retrieve necessary data
+                const playerParty = data.response.playParty;
+                const playerPartyId = data.response.playParty.id;
+                const playerCardsA = data.response.playerCardsA;
+                const playerCardsB = data.response.playerCardsB;
+
+                // Create HTML elements dynamically
+                const fullContentDiv = document.createElement('div');
+                fullContentDiv.id = 'full-content';
+
+                // Left Side
+                const leftSideDiv = document.createElement('div');
+                leftSideDiv.id = 'leftSide';
+
+                const cardDivA = document.createElement('div');
+                cardDivA.className = 'card';
+
+                const imageA = document.createElement('img');
+                imageA.src = '/path/to/image';
+                imageA.alt = 'Player Image';
+
+                const selectA = document.createElement('select');
+                selectA.id = 'playerCardDropdownA';
+
+                playerCardsA.forEach(card => {
+                    const optionA = document.createElement('option');
+                    optionA.value = card.id;
+                    optionA.text = `${card.name} - ${card.hp}HP`;
+                    optionA.selected = card.id === playerParty.cardPlayerA;
+                    selectA.appendChild(optionA);
+                });
+                const attackButtonB = document.createElement('button');
+                const attackButtonA = document.createElement('button');
+                if (playerParty.currentPlayerId === playerParty.userIdA) {
+                    attackButtonB.style = "display: none";
+                    attackButtonA.addEventListener('click', () => {
+                        sendFightRequest(playerPartyId);
+                        attackButtonB.style = "display: block";
+                        attackButtonA.style = "display: none";
+                    });
+                }
+                attackButtonA.innerText = 'Attack';
+
+                cardDivA.appendChild(imageA);
+                cardDivA.appendChild(selectA);
+                cardDivA.appendChild(attackButtonA);
+
+                leftSideDiv.appendChild(cardDivA);
+
+                // Right Side
+                const rightSideDiv = document.createElement('div');
+                rightSideDiv.id = 'rightSide';
+
+                const cardDivB = document.createElement('div');
+                cardDivB.className = 'card';
+
+                const imageB = document.createElement('img');
+                imageB.src = '/path/to/image';
+                imageB.alt = 'Player Image';
+
+                const selectB = document.createElement('select');
+                selectB.id = 'playerCardDropdownB';
+
+                playerCardsB.forEach(card => {
+                    const optionB = document.createElement('option');
+                    optionB.value = card.id;
+                    optionB.text = `${card.name} - ${card.hp}HP`;
+                    optionB.selected = card.id === playerParty.cardPlayerB;
+                    selectB.appendChild(optionB);
+                });
+
+
+                if (playerParty.currentPlayerId === playerParty.userIdB) {
+                    attackButtonA.style = "display: none";
+                    attackButtonB.addEventListener('click', () => {
+                        sendFightRequest(playerPartyId);
+                        attackButtonA.style = "display: block";
+                        attackButtonB.style = "display: none";
+                    });
+                }
+                attackButtonB.innerText = 'Attack';
+
+                cardDivB.appendChild(imageB);
+                cardDivB.appendChild(selectB);
+                cardDivB.appendChild(attackButtonB);
+
+                rightSideDiv.appendChild(cardDivB);
+
+                // Winner Message
+                if (playerParty.winnerId !== null && playerParty.winnerId !== 0) {
+                    const winnerDiv = document.createElement('div');
+
+                    const winnerHeading = document.createElement('h2');
+                    winnerHeading.innerText = 'Winner: ';
+
+                    const winnerSpan = document.createElement('span');
+                    winnerSpan.id = 'winnerSpan';
+                    winnerSpan.innerText = playerParty.winnerId;
+
+                    winnerHeading.appendChild(winnerSpan);
+                    winnerDiv.appendChild(winnerHeading);
+
+                    fullContentDiv.appendChild(winnerDiv);
+                }
+
+                // Append left and right sides to full content div
+                fullContentDiv.appendChild(leftSideDiv);
+                fullContentDiv.appendChild(rightSideDiv);
+
+                // Add the generated HTML to the document
+                const container = document.getElementById('container'); // Replace 'container' with the ID of the parent element where you want to append the generated HTML
+                container.appendChild(fullContentDiv);
+
+                return data.response;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+
+
+
+
+    function extractIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        return id;
+    }
+
+    // Usage example
+    const id = extractIdFromUrl();
+    var resf = generatePlayerPartyHTML(id)
+    resf.then(res => {
+        var playerParty = res.playParty;
+        var playerPartyId = res.playParty.id;
+        var cardsIdUser = res.cardUserList;
+        if (cardsIdUser.length > 0) {
+            if (playerParty.userIdB == 0) {
+                var user_current = cardsIdUser[0]['userId'];
+                if (user_current != playerParty.userIdA) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/view-player-party/second-player/" + playerPartyId,
+                        contentType: "application/json",
+                        success: function (response) {
+                            // Handle the response and update the page
+                            //location.reload();
+                            var container = document.getElementById("container");
+                            while (container.firstChild) {
+                                container.removeChild(container.firstChild);
+                            }
+                            const id = extractIdFromUrl();
+                            var resf = generatePlayerPartyHTML(id)
+                        }
+                    });
+                }
+
+            }
+        }
+
+        function sendFightRequest(playerId) {
+            var selectedCard;
+            if (playerId === 1) {
+                selectedCard = $("#playerCardDropdownA").val();
+            } else if (playerId === 2) {
+                selectedCard = $("#playerCardDropdownB").val();
+            }
+
+            // Perform AJAX request to /party-player-fight
+            $.ajax({
+                type: "POST",
+                url: "/party-player-fight/" + playerId,
+                contentType: "application/json",
+                success: function (response) {
+                    // Handle the response and update the page
+                    var container = document.getElementById("container");
+                    while (container.firstChild) {
+                        container.removeChild(container.firstChild);
+                    }
+                    const id = extractIdFromUrl();
+                    var resf = generatePlayerPartyHTML(id)
+                }
+            });
+        }
+
+        // Periodically update party data every 5 seconds
+        setInterval(function () {
+            var container = document.getElementById("container");
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            const id = extractIdFromUrl();
+            var resf = generatePlayerPartyHTML(id)
+        }, 5000);
+
+        $(document).ready(function () {
+            // Event handler for player A card selection
+            $("#playerCardDropdownA").change(function () {
+                var selectedCardId = $(this).val();
+                sendCardSelectionRequest(selectedCardId, 1);
+            });
+
+            // Event handler for player B card selection
+            $("#playerCardDropdownB").change(function () {
+                var selectedCardId = $(this).val();
+                sendCardSelectionRequest(selectedCardId, 2);
+            });
+
+            function sendCardSelectionRequest(selectedCardId, playerId) {
+                // Create a JSON object with the selected card I
+
+                // Perform AJAX request to update the card selection
+                $.ajax({
+                    type: "POST",
+                    url: "/update-user-card-play-party/" + playerPartyId + "/" + selectedCardId,
+                    contentType: "application/json",
+                    data: JSON.stringify({}),
+                    success: function (response) {
+                        // Handle the response if needed
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
